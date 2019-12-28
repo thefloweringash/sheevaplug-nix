@@ -19,6 +19,7 @@ in
   boot.consoleLogLevel = lib.mkDefault 7;
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelParams = [ "console=ttyS0,115200n8" ];
+  boot.initrd.availableKernelModules = [ "usb_storage" "ehci-orion" "orion_nand" "mvsdio" ];
 
   sdImage = {
     populateFirmwareCommands = "";
@@ -33,8 +34,7 @@ in
   # so we don't want to provide the installation configuration.nix.
   installer.cloneConfig = false;
 
-  # TODO: why is this necessary?
-  nixpkgs.crossSystem = lib.systems.examples.sheevaplug // { system = "armv5tel-linux"; };
+  nixpkgs.crossSystem = import ./platform.nix { inherit lib; };
 
   # minimal settings
   programs.command-not-found.enable = false;
