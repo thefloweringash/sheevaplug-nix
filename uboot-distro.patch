@@ -1,0 +1,54 @@
+diff -ur u-boot-2019.10/configs/sheevaplug_defconfig u-boot-2019.10-patched/configs/sheevaplug_defconfig
+--- u-boot-2019.10/configs/sheevaplug_defconfig	2019-10-08 06:14:02.000000000 +0900
++++ u-boot-2019.10-patched/configs/sheevaplug_defconfig	2019-12-28 22:48:45.320114741 +0900
+@@ -46,3 +46,4 @@
+ CONFIG_USB_EHCI_HCD=y
+ CONFIG_USB_STORAGE=y
+ CONFIG_LZMA=y
++CONFIG_DISTRO_DEFAULTS=y
+u-boot-2019.10-patched/doc のみに存在: .README.distro.swp
+diff -ur u-boot-2019.10/include/configs/sheevaplug.h u-boot-2019.10-patched/include/configs/sheevaplug.h
+--- u-boot-2019.10/include/configs/sheevaplug.h	2019-10-08 06:14:02.000000000 +0900
++++ u-boot-2019.10-patched/include/configs/sheevaplug.h	2019-12-28 23:28:07.871771299 +0900
+@@ -40,8 +40,8 @@
+  * it has to be rounded to sector size
+  */
+ #define CONFIG_ENV_SIZE			0x20000	/* 128k */
+-#define CONFIG_ENV_ADDR			0x80000
+-#define CONFIG_ENV_OFFSET		0x80000	/* env starts here */
++#define CONFIG_ENV_ADDR			0xa0000
++#define CONFIG_ENV_OFFSET		0xa0000	/* env starts here */
+ /*
+  * Environment is right behind U-Boot in flash. Make sure U-Boot
+  * doesn't grow into the environment area.
+@@ -51,15 +51,22 @@
+ /*
+  * Default environment variables
+  */
+-#define CONFIG_BOOTCOMMAND		"${x_bootcmd_kernel}; "	\
+-	"setenv bootargs ${x_bootargs} ${x_bootargs_root}; "	\
+-	"bootm 0x6400000;"
++#ifndef CONFIG_SPL_BUILD
++#define BOOT_TARGET_DEVICES(func) \
++  func(MMC, mmc, 0) \
++  func(USB, usb, 0) \
++  func(PXE, pxe, na) \
++  func(DHCP, dhchp, na)
++#include <config_distro_bootcmd.h>
++#endif
+ 
+-#define CONFIG_EXTRA_ENV_SETTINGS	"x_bootargs=console"	\
+-	"=ttyS0,115200 mtdparts="CONFIG_MTDPARTS_DEFAULT	\
+-	"x_bootcmd_kernel=nand read 0x6400000 0x100000 0x400000\0" \
+-	"x_bootcmd_usb=usb start\0" \
+-	"x_bootargs_root=root=/dev/mtdblock3 rw rootfstype=jffs2\0"
++#define CONFIG_EXTRA_ENV_SETTINGS	\
++  "pxefile_addr_r=0x00800000\0" \
++  "kernel_addr_r=0x00900000\0" \
++  "ramdisk_addr_r=0x02900000\0" \
++  "fdt_addr_r=0x04900000\0" \
++  "scriptaddr=0x04a00000\0" \
++  BOOTENV
+ 
+ /*
+  * Ethernet Driver configuration
