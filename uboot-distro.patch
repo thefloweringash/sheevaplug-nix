@@ -33,7 +33,7 @@ diff -ur u-boot-2019.10/include/configs/sheevaplug.h u-boot-2019.10-patched/incl
 +  func(MMC, mmc, 0) \
 +  func(USB, usb, 0) \
 +  func(PXE, pxe, na) \
-+  func(DHCP, dhchp, na)
++  func(DHCP, dhcp, na)
 +#include <config_distro_bootcmd.h>
 +#endif
  
