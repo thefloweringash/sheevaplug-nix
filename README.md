@@ -24,7 +24,7 @@ openocd](https://newit.co.uk/forum/index.php?topic=2835.0).
 # Build and dump the sdImage
 
 ```
-$ nix-build sheevaplug-system.nix -o sdImage
+$ nix-build sheevaplug-system.nix -A config.system.build.sdImage -o sdImage
 $ bzcat sdImage/sd-image/*.bz2 > /dev/$sdcard
 ```
 
